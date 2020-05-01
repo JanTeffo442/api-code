@@ -1,26 +1,44 @@
 import requests
 from datetime import date
 
-pull_requests = requests.get("https://api.github.com/repos/Umuzi-org/tech-department/pulls?id=1")
+username = 'Umuzi-org'
+repo = 'tech-department'
+
+
+#Repository information with start created_at date and updated_at date
+user_data = requests.get(f"https://api.github.com/users/{username}").json()
+print(user_data)
+print("\n")
+
+
+#Getting number of contributors
+all_contributors = list()
+page_count = 1
+
+while True:
+    contributors = requests.get(f"https://api.github.com/repos/{username}/{repo}/contributors?page=%d"%page_count)
+    if contributors != None and contributors.status_code == 200 and len(contributors.json()) > 0:
+        all_contributors = all_contributors + contributors.json()
+    else:
+        break
+    page_count = page_count + 1
+
+count=len(all_contributors)
+print(f"Number of contributors is : {count} \n")
+
+
+#List all pull requests
+pull_requests = requests.get(f"https://api.github.com/repos/{username}/{repo}/pulls?id=1")
 
 print(pull_requests.json())
 
-def pull_requests(owner, repo_name, start_date, end_date):
-  pull_requests = requests.get(f"https://api.github.com/repos/{owner}/{repo_name}/pulls?id=1")
+def pull_requests(owner, repo, start_date, end_date):
+  pull_requests = requests.get(f"https://api.github.com/repos/{username}/{repo}/pulls?id=1")
   return pull_requests
 
-print(dir(pull_requests("Umuzi-org","tech-department",18-3-2020,18-4-2020)))
-
-x = {
-  "id" : 1,
-  'created_at':2019-2-4,
-  'updated_at': 2020-4-27,
-  'pushed_at': 2020-4-21,
-
-}
+print(dir(pull_requests("Umuzi-org","tech-department",1-1-2019,16-12-2020)))
+print("\n")
 
 
-f_date = date(2020, 3, 18)
-l_date = date(2020, 4, 18)
-pull_requests = l_date - f_date
-print(pull_requests.days)
+
+
